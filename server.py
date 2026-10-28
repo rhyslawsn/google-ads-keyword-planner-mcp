@@ -89,12 +89,16 @@ def _get_client() -> GoogleAdsClient:
     global _client
     if _client is None:
         config: dict[str, Any] = {
-            "developer_token": _required("GOOGLE_ADS_DEVELOPER_TOKEN"),
             "client_id": _required("GOOGLE_ADS_CLIENT_ID"),
             "client_secret": _required("GOOGLE_ADS_CLIENT_SECRET"),
             "refresh_token": _required("GOOGLE_ADS_REFRESH_TOKEN"),
             "use_proto_plus": True,
         }
+        # Developer tokens are being phased out (access levels now follow the
+        # Google Cloud project), so this is optional.
+        dev_token = os.environ.get("GOOGLE_ADS_DEVELOPER_TOKEN")
+        if dev_token:
+            config["developer_token"] = dev_token
         login = os.environ.get("GOOGLE_ADS_LOGIN_CUSTOMER_ID")
         if login:
             config["login_customer_id"] = login.replace("-", "")
